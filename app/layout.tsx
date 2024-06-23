@@ -1,8 +1,11 @@
 import type { Metadata } from "next";
-import { Inter } from "next/font/google";
-import "./globals.css";
-
-const inter = Inter({ subsets: ["latin"] });
+import { ColorSchemeScript } from "@mantine/core";
+import "@mantine/core/styles.css";
+import Provider from "../utilities/provider";
+import { RootStyleRegistry } from "./EmotionRootStyleRegistry";
+import { MantineEmotionProvider } from "@mantine/emotion";
+import UserStoreProvider from "@/providers/userStoreProvider";
+import ChatStoreProvider from "@/providers/chatStoreProvider";
 
 export const metadata: Metadata = {
   title: "Create Next App",
@@ -16,7 +19,24 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en">
-      <body className={inter.className}>{children}</body>
+      <head>
+        <ColorSchemeScript />
+        <meta
+          name="viewport"
+          content="minimum-scale=1, initial-scale=1, width=device-width, user-scalable=no"
+        />
+      </head>
+      <body suppressHydrationWarning={true}>
+        <RootStyleRegistry>
+          <Provider>
+            <MantineEmotionProvider>
+              <UserStoreProvider>
+                <ChatStoreProvider>{children}</ChatStoreProvider>
+              </UserStoreProvider>
+            </MantineEmotionProvider>
+          </Provider>
+        </RootStyleRegistry>
+      </body>
     </html>
   );
 }

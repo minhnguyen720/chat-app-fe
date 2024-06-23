@@ -1,95 +1,83 @@
-import Image from "next/image";
-import styles from "./page.module.css";
+"use client";
 
-export default function Home() {
-  return (
-    <main className={styles.main}>
-      <div className={styles.description}>
-        <p>
-          Get started by editing&nbsp;
-          <code className={styles.code}>app/page.tsx</code>
-        </p>
-        <div>
-          <a
-            href="https://vercel.com?utm_source=create-next-app&utm_medium=appdir-template&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            By{" "}
-            <Image
-              src="/vercel.svg"
-              alt="Vercel Logo"
-              className={styles.vercelLogo}
-              width={100}
-              height={24}
-              priority
-            />
-          </a>
-        </div>
-      </div>
+import useUserStore from "@/hooks/useUserStore";
+import { Box, Button, px, TextInput, Title } from "@mantine/core";
+import { useRouter } from "next/navigation";
+import React from "react";
+import { useForm } from "@mantine/form";
+import axios from "axios";
+import { socket } from "./socket";
+import useChatStore from "@/hooks/useChatStore";
+import { SERVER_URL } from "@/utilities/constants";
 
-      <div className={styles.center}>
-        <Image
-          className={styles.logo}
-          src="/next.svg"
-          alt="Next.js Logo"
-          width={180}
-          height={37}
-          priority
-        />
-      </div>
+const VALID_USERS: string[] = ["willie", "user_1"];
 
-      <div className={styles.grid}>
-        <a
-          href="https://nextjs.org/docs?utm_source=create-next-app&utm_medium=appdir-template&utm_campaign=create-next-app"
-          className={styles.card}
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <h2>
-            Docs <span>-&gt;</span>
-          </h2>
-          <p>Find in-depth information about Next.js features and API.</p>
-        </a>
-
-        <a
-          href="https://nextjs.org/learn?utm_source=create-next-app&utm_medium=appdir-template&utm_campaign=create-next-app"
-          className={styles.card}
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <h2>
-            Learn <span>-&gt;</span>
-          </h2>
-          <p>Learn about Next.js in an interactive course with&nbsp;quizzes!</p>
-        </a>
-
-        <a
-          href="https://vercel.com/templates?framework=next.js&utm_source=create-next-app&utm_medium=appdir-template&utm_campaign=create-next-app"
-          className={styles.card}
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <h2>
-            Templates <span>-&gt;</span>
-          </h2>
-          <p>Explore starter templates for Next.js.</p>
-        </a>
-
-        <a
-          href="https://vercel.com/new?utm_source=create-next-app&utm_medium=appdir-template&utm_campaign=create-next-app"
-          className={styles.card}
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <h2>
-            Deploy <span>-&gt;</span>
-          </h2>
-          <p>
-            Instantly deploy your Next.js site to a shareable URL with Vercel.
-          </p>
-        </a>
-      </div>
-    </main>
+const Welcome = () => {
+  const router = useRouter();
+  const updateConnectedSocket = useChatStore(
+    (state) => state.updateConnectedSocket
   );
-}
+  const updateAuthorizedUsername = useUserStore(
+    (state) => state.updateAuthorizedUsername
+  );
+  const form = useForm({
+    initialValues: {
+      username: "",
+    },
+    validate: {
+      username: (value) =>
+        value.trim().length > 0 ? null : "Invalid username",
+    },
+  });
+
+  const submit = (values: { username: string }) => {
+    if (VALID_USERS.includes(values.username)) {
+      sessionStorage.setItem("username", values.username);
+      updateAuthorizedUsername(values.username);
+      const connectedSocket = socket.connect();
+      if (connectedSocket.id) {
+        updateConnectedSocket(connectedSocket);
+        axios
+          .put(`${SERVER_URL}/auth`, {
+            username: values.username,
+            socket: connectedSocket.id,
+          })
+          .then(() => {
+            router.push("/conversations");
+          });
+      }
+    } else {
+      form.setFieldError("username", "Username does not exits");
+    }
+  };
+
+  return (
+    <>
+      <Box
+        sx={{
+          display: "flex",
+          justifyContent: "center",
+          alignItems: "center",
+          width: "100%",
+          height: "70vh",
+        }}>
+        <form
+          onSubmit={form.onSubmit((values) => submit(values))}
+          style={{ width: "50%" }}>
+          <Title mb={px(10)}>Welcome back!</Title>
+
+          <TextInput
+            key={form.key("username")}
+            {...form.getInputProps("username")}
+            placeholder="username"
+          />
+          <Box sx={{ marginTop: "1rem" }}>
+            <Button type="submit">Go to conversations</Button>
+          </Box>
+        </form>
+      </Box>
+    </>
+  );
+};
+
+export default Welcome;
