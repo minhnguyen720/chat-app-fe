@@ -8,21 +8,16 @@ import dayjs from "dayjs";
 import { CHAT_STATUS } from "@/utilities/constants";
 import useUserStore from "@/hooks/useUserStore";
 import { v4 as uuidv4 } from "uuid";
+import useChatStore from "@/hooks/useChatStore";
 
-interface Props {
-  updateChatMockData: (newChat: {
-    content: string;
-    createdDate: Date;
-    owner: string;
-    receiver: string;
-    status: string;
-  }) => void;
-}
-
-const ChatBox: React.FC<Props> = ({ updateChatMockData }) => {
+const ChatBox = () => {
   const chatboxRef = useRef<HTMLTextAreaElement>(null);
   const username = useUserStore((state) => state.username);
   const receiver = useUserStore((state) => state.receiver);
+  const { updateChatList, chatList } = useChatStore((state) => ({
+    chatList: state.chatList,
+    updateChatList: state.updateChatList,
+  }));
 
   const send = () => {
     if (
@@ -38,7 +33,8 @@ const ChatBox: React.FC<Props> = ({ updateChatMockData }) => {
         receiver: receiver,
       };
 
-      updateChatMockData(newChat);
+      const newChatList = [...chatList, newChat];
+      updateChatList(newChatList);
 
       socket.emit("message", newChat);
       chatboxRef.current.value = "";

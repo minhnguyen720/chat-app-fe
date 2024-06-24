@@ -1,4 +1,7 @@
+"use client";
+
 import ApplicationWrapper from "@/components/ApplicationWrapper";
+import useSocketIo from "@/hooks/useSocketIo";
 import React from "react";
 
 interface Props {
@@ -6,6 +9,7 @@ interface Props {
 }
 
 const ConversationLayout: React.FC<Props> = ({ children }) => {
+  useSocketIo();
   return <ApplicationWrapper>{children}</ApplicationWrapper>;
 };
 
