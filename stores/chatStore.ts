@@ -1,5 +1,5 @@
 import { Socket } from "socket.io-client";
-import { createStore } from "zustand";
+import { create, createStore } from "zustand";
 
 export type ChatItem = {
   content: string;
@@ -29,6 +29,15 @@ export const defaultInitState: ChatState = {
   connectedSocket: undefined,
   chatList: [],
 };
+
+export const useChatStore = create<ChatStore>((set) => ({
+  currentChatName: "User 1",
+  connectedSocket: undefined,
+  chatList: [],
+  updateCurrentChatName: (chatId) => set(() => ({ currentChatName: chatId })),
+  updateConnectedSocket: (socket) => set(() => ({ connectedSocket: socket })),
+  updateChatList: (chatList) => set(() => ({ chatList: chatList })),
+}));
 
 export const createChatStore = (initState: ChatState = defaultInitState) => {
   return createStore<ChatStore>((set) => ({

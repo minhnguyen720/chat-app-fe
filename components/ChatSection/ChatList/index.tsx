@@ -2,7 +2,7 @@ import { CHAT_VARIANT } from "@/utilities/constants";
 import { Stack, Center } from "@mantine/core";
 import React, { useLayoutEffect, useRef } from "react";
 import Chat from "../Chat";
-import useChatStore from "@/hooks/useChatStore";
+import { useChatStore } from "@/stores/chatStore";
 import useUserStore from "@/hooks/useUserStore";
 
 const ChatList = () => {

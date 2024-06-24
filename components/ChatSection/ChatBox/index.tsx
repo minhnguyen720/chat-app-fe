@@ -8,7 +8,7 @@ import dayjs from "dayjs";
 import { CHAT_STATUS } from "@/utilities/constants";
 import useUserStore from "@/hooks/useUserStore";
 import { v4 as uuidv4 } from "uuid";
-import useChatStore from "@/hooks/useChatStore";
+import { useChatStore } from "@/stores/chatStore";
 
 const ChatBox = () => {
   const chatboxRef = useRef<HTMLTextAreaElement>(null);

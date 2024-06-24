@@ -21,8 +21,10 @@ import {
 import { MantineLogo } from "@mantinex/mantine-logo";
 import classes from "./DoubleSidebar.module.css";
 import useInitDoubleSidebar from "./hooks/useInitDoubleSidebar";
-import useChatStore from "@/hooks/useChatStore";
+import { useChatStore } from "@/stores/chatStore";
 import { useRouter } from "next/navigation";
+import axios from "axios";
+import { SERVER_URL } from "@/utilities/constants";
 
 export function DoubleSidebar() {
   const { colorScheme, toggleColorScheme } = useMantineColorScheme();
@@ -33,6 +35,9 @@ export function DoubleSidebar() {
   const router = useRouter();
 
   const handleLogout = () => {
+    axios.put(`${SERVER_URL}/logout`, {
+      username: sessionStorage.getItem("username"),
+    });
     sessionStorage.removeItem("username");
     sessionStorage.removeItem("currentContact");
     sessionStorage.removeItem("currentContactName");

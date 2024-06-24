@@ -1,4 +1,4 @@
-import useChatStore from "@/hooks/useChatStore";
+import { useChatStore } from "@/stores/chatStore";
 import useUserStore from "@/hooks/useUserStore";
 import {
   Box,

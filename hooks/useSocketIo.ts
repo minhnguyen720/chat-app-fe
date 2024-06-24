@@ -1,34 +1,28 @@
-import { ChatItem } from "@/stores/chatStore";
-import { useEffect } from "react";
-import useChatStore from "./useChatStore";
-import { SERVER_URL } from "@/utilities/constants";
-import axios from "axios";
+import { ChatItem, useChatStore } from "@/stores/chatStore";
+import { useEffect, useState } from "react";
 
 const useSocketIo = () => {
-  const { updateChatList, connectedSocket } = useChatStore((state) => ({
-    chatList: state.chatList,
-    updateChatList: state.updateChatList,
-    connectedSocket: state.connectedSocket,
-  }));
+  const { updateChatList, connectedSocket, chatList } = useChatStore(
+    (state) => ({
+      chatList: state.chatList,
+      updateChatList: state.updateChatList,
+      connectedSocket: state.connectedSocket,
+    })
+  );
+  const [newChat, setNewChat] = useState<ChatItem | undefined>(undefined);
+
+  useEffect(() => {
+    if (newChat) {
+      updateChatList([...chatList, newChat]);
+      setNewChat(undefined);
+    }
+  }, [newChat]);
 
   useEffect(() => {
     const onConnect = () => {
       if (connectedSocket && connectedSocket.id) {
         connectedSocket.on("message", (chat: ChatItem) => {
-          const username = sessionStorage.getItem("username");
-          const receiver = sessionStorage.getItem("currentContact");
-          console.log("username", username);
-          console.log("reciever", receiver);
-
-          // TODO: will apply lazy fetch later
-          axios
-            .get(
-              `${SERVER_URL}/chat/by-receiver?username=${username}&receiver=${receiver}`
-            )
-            .then((res) => {
-              const newChatList = [...res.data, chat];
-              updateChatList(newChatList);
-            });
+          setNewChat(chat);
         });
       }
     };

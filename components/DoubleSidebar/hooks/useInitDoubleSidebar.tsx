@@ -3,7 +3,7 @@ import { useDisclosure } from "@mantine/hooks";
 import { IconBubble } from "@tabler/icons-react";
 import { useState, useMemo, useEffect } from "react";
 import classes from "../DoubleSidebar.module.css";
-import useChatStore from "@/hooks/useChatStore";
+import { useChatStore } from "@/stores/chatStore";
 import useUserStore from "@/hooks/useUserStore";
 import axios from "axios";
 import { SERVER_URL } from "@/utilities/constants";

@@ -5,7 +5,7 @@ import React, { useEffect } from "react";
 import ChatBox from "./ChatBox";
 import ChatTopbar from "./ChatTopbar";
 import { SERVER_URL } from "@/utilities/constants";
-import useChatStore from "@/hooks/useChatStore";
+import { useChatStore } from "@/stores/chatStore";
 import axios from "axios";
 import ChatList from "./ChatList";
 

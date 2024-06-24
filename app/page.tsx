@@ -7,8 +7,8 @@ import React from "react";
 import { useForm } from "@mantine/form";
 import axios from "axios";
 import { socket } from "./socket";
-import useChatStore from "@/hooks/useChatStore";
 import { SERVER_URL } from "@/utilities/constants";
+import { useChatStore } from "@/stores/chatStore";
 
 const VALID_USERS: string[] = ["willie", "user_1"];
 
@@ -34,8 +34,9 @@ const Welcome = () => {
     if (VALID_USERS.includes(values.username)) {
       sessionStorage.setItem("username", values.username);
       updateAuthorizedUsername(values.username);
+
       const connectedSocket = socket.connect();
-      if (connectedSocket.id) {
+      connectedSocket.on("connect", () => {
         updateConnectedSocket(connectedSocket);
         axios
           .put(`${SERVER_URL}/auth`, {
@@ -45,7 +46,10 @@ const Welcome = () => {
           .then(() => {
             router.push("/conversations");
           });
-      }
+      });
+      connectedSocket.off("connect", () => {
+        console.log("Finish assign socket id to user");
+      });
     } else {
       form.setFieldError("username", "Username does not exits");
     }
