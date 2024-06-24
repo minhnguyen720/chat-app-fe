@@ -1,10 +1,9 @@
 "use client";
 
 import { Box } from "@mantine/core";
-import React, { useLayoutEffect } from "react";
+import React, { useEffect } from "react";
 import ChatBox from "./ChatBox";
 import ChatTopbar from "./ChatTopbar";
-import useUserStore from "@/hooks/useUserStore";
 import { SERVER_URL } from "@/utilities/constants";
 import useChatStore from "@/hooks/useChatStore";
 import axios from "axios";
@@ -15,21 +14,19 @@ const ChatSection = () => {
     chatList: state.chatList,
     updateChatList: state.updateChatList,
   }));
-  const { username, receiver } = useUserStore((state) => ({
-    username: state.username,
-    receiver: state.receiver,
-  }));
 
+  const username = sessionStorage.getItem("username");
+  const reciever = sessionStorage.getItem("currentContact");
   // Initialize data
-  useLayoutEffect(() => {
+  useEffect(() => {
     const init = async () => {
       const res = await axios.get(
-        `${SERVER_URL}/chat/by-receiver?username=${username}&receiver=${receiver}`
+        `${SERVER_URL}/chat/by-receiver?username=${username}&receiver=${reciever}`
       );
       updateChatList(res.data);
     };
     init();
-  }, [username, receiver]);
+  }, [username, reciever]);
 
   return (
     <Box sx={{ padding: "0 1.5rem" }}>

@@ -40,16 +40,20 @@ const useInitDoubleSidebar = () => {
 
     if (currentContactName) {
       updateCurrentChat(currentContactName);
+      sessionStorage.setItem("currentContactName", currentContactName);
     } else {
       updateCurrentChat(contactsMockdata[0].name);
+      sessionStorage.setItem("currentContactName", contactsMockdata[0].name);
     }
 
     if (currentContact) {
       setActiveLink(currentContact);
       updateReceiverUsername(currentContact);
+      sessionStorage.setItem("currentContact", currentContact);
     } else {
       setActiveLink(contactsMockdata[0].username);
       updateReceiverUsername(contactsMockdata[0].username);
+      sessionStorage.setItem("currentContact", contactsMockdata[0].username);
     }
   }, []);
 
