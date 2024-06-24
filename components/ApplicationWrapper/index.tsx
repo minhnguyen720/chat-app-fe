@@ -1,7 +1,7 @@
 "use client";
 
 import { Flex } from "@mantine/core";
-import React from "react";
+import React, { useEffect } from "react";
 import { DoubleSidebar } from "../DoubleSidebar";
 import { useRouter } from "next/navigation";
 import useUserStore from "@/hooks/useUserStore";
@@ -17,25 +17,17 @@ const ApplicationWrapper = ({
   );
   const currentUsername = sessionStorage.getItem("username");
 
-  if (
-    currentUsername !== null &&
-    currentUsername !== undefined &&
-    currentUsername.trim().length > 0
-  ) {
-    updateAuthorizedUsername(currentUsername);
-  } else {
-    router.push("/");
-  }
-
-  // useEffect(() => {
-  //   const username = sessionStorage.getItem("username");
-  //   if (
-  //     username === undefined ||
-  //     username === null ||
-  //     username.trim().length === 0
-  //   )
-  //     router.push("/");
-  // }, []);
+  useEffect(() => {
+    if (
+      currentUsername !== null &&
+      currentUsername !== undefined &&
+      currentUsername.trim().length > 0
+    ) {
+      updateAuthorizedUsername(currentUsername);
+    } else {
+      router.push("/");
+    }
+  }, [currentUsername]);
 
   return (
     <Flex>
