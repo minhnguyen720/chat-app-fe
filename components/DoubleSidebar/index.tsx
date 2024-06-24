@@ -10,16 +10,36 @@ import {
   Stack,
   Loader,
   Center,
+  useMantineTheme,
 } from "@mantine/core";
-import { IconArrowBarLeft, IconSun, IconMoon } from "@tabler/icons-react";
+import {
+  IconArrowBarLeft,
+  IconSun,
+  IconMoon,
+  IconLogout,
+} from "@tabler/icons-react";
 import { MantineLogo } from "@mantinex/mantine-logo";
 import classes from "./DoubleSidebar.module.css";
 import useInitDoubleSidebar from "./hooks/useInitDoubleSidebar";
+import useChatStore from "@/hooks/useChatStore";
+import { useRouter } from "next/navigation";
 
 export function DoubleSidebar() {
   const { colorScheme, toggleColorScheme } = useMantineColorScheme();
   const { loaded, opened, menuItems, toggle, active, contacts } =
     useInitDoubleSidebar();
+  const connectedSocket = useChatStore((state) => state.connectedSocket);
+  const theme = useMantineTheme();
+  const router = useRouter();
+
+  const handleLogout = () => {
+    sessionStorage.removeItem("username");
+    sessionStorage.removeItem("currentContact");
+    sessionStorage.removeItem("currentContactName");
+
+    connectedSocket && connectedSocket.disconnect();
+    router.push("/");
+  };
 
   return (
     <>
@@ -66,6 +86,13 @@ export function DoubleSidebar() {
                         className={classes.mainLink}
                         onClick={toggle}>
                         <IconArrowBarLeft />
+                      </UnstyledButton>
+                    </Tooltip>
+                    <Tooltip label={"Log out"}>
+                      <UnstyledButton
+                        className={classes.mainLink}
+                        onClick={handleLogout}>
+                        <IconLogout color={theme.colors.red[6]} />
                       </UnstyledButton>
                     </Tooltip>
                   </Stack>
