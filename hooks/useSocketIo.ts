@@ -1,3 +1,4 @@
+import { socket } from "@/app/socket";
 import { ChatItem, useChatStore } from "@/stores/chatStore";
 import { SERVER_URL } from "@/utilities/constants";
 import axios from "axios";
@@ -7,17 +8,35 @@ const useSocketIo = () => {
   const {
     updateChatList,
     connectedSocket,
-    chatList,
     updateContactList,
     contactList,
+    updateConnectedSocket,
   } = useChatStore((state) => ({
-    chatList: state.chatList,
     updateChatList: state.updateChatList,
     connectedSocket: state.connectedSocket,
     updateContactList: state.updateContactList,
     contactList: state.contactList,
+    updateConnectedSocket: state.updateConnectedSocket,
   }));
   const [newChat, setNewChat] = useState<ChatItem | undefined>(undefined);
+
+  // Auto reconnect socket when refresh page
+  useEffect(() => {
+    if (!connectedSocket) {
+      const connectedSocket = socket.connect();
+      const username = sessionStorage.getItem("username");
+      connectedSocket.on("connect", () => {
+        updateConnectedSocket(connectedSocket);
+        axios.put(`${SERVER_URL}/auth`, {
+          username: username,
+          socket: connectedSocket.id,
+        });
+      });
+      connectedSocket.off("connect", () => {
+        console.log("Finish assign socket id to user");
+      });
+    }
+  }, [connectedSocket]);
 
   // Since Zustand state not able to use in onConnect so we need a state to trigger this useEffect to update global chat list
   useEffect(() => {
