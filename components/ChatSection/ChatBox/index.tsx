@@ -6,14 +6,11 @@ import { IconSend } from "@tabler/icons-react";
 import React, { useRef } from "react";
 import dayjs from "dayjs";
 import { CHAT_STATUS } from "@/utilities/constants";
-import useUserStore from "@/hooks/useUserStore";
 import { v4 as uuidv4 } from "uuid";
-import { useChatStore } from "@/stores/chatStore";
+import { ChatItem, useChatStore } from "@/stores/chatStore";
 
 const ChatBox = () => {
   const chatboxRef = useRef<HTMLTextAreaElement>(null);
-  const username = useUserStore((state) => state.username);
-  const receiver = useUserStore((state) => state.receiver);
   const { updateChatList, chatList } = useChatStore((state) => ({
     chatList: state.chatList,
     updateChatList: state.updateChatList,
@@ -24,19 +21,43 @@ const ChatBox = () => {
       chatboxRef.current !== null &&
       chatboxRef.current.value.trim().length > 0
     ) {
-      const newChat = {
-        id: uuidv4(),
+      const uniqueId = uuidv4();
+      const createdDate = dayjs().toDate();
+      const username = sessionStorage.getItem("username");
+      const receiver = sessionStorage.getItem("currentContact");
+
+      const chatDto = {
+        id: uniqueId,
         content: chatboxRef.current.value,
-        createdDate: dayjs().toDate(),
+        createdDate: createdDate,
         status: CHAT_STATUS.SENT,
         owner: username,
         receiver: receiver,
       };
 
-      const newChatList = [...chatList, newChat];
-      updateChatList(newChatList);
+      const newConversationItem = {
+        status: CHAT_STATUS.SENT,
+        createdDate: createdDate,
+        content: chatboxRef.current.value,
+      };
 
-      socket.emit("message", newChat);
+      if (chatList) {
+        const newChatList = {
+          ...chatList,
+          conversation: [...chatList.conversation, newConversationItem],
+        };
+        updateChatList(newChatList);
+      } else if (username !== null && receiver !== null) {
+        const newChatList: ChatItem = {
+          id: uniqueId,
+          owner: username,
+          receiver: receiver,
+          conversation: [newConversationItem],
+        };
+        updateChatList(newChatList);
+      }
+
+      socket.emit("message", chatDto);
       chatboxRef.current.value = "";
     }
   };

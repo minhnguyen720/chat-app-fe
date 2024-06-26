@@ -9,14 +9,25 @@ import axios from "axios";
 import { SERVER_URL } from "@/utilities/constants";
 
 const defaultUsers = [
-  { username: "user_1", name: "User 1" },
-  { username: "user_2", name: "User 2" },
-  { username: "willie", name: "Willie" },
+  {
+    id: 1,
+    username: "user_2",
+    name: "User 2",
+    online: false,
+  },
+  {
+    id: 3,
+    username: "user_1",
+    online: true,
+    name: "User 1",
+  },
+  {
+    id: 2,
+    username: "willie",
+    online: true,
+    name: "Willie",
+  },
 ];
-
-const contactsMockdata = defaultUsers.filter((item) => {
-  return item.username !== sessionStorage.getItem("username");
-});
 
 const menuItemsMockdata = [{ icon: IconBubble, label: "Coversations" }];
 
@@ -25,16 +36,24 @@ const useInitDoubleSidebar = () => {
   const [activeLink, setActiveLink] = useState("");
   const [opened, { open, toggle }] = useDisclosure(true);
   const [loaded, setLoaded] = useState<boolean>(false);
-  const { updateCurrentChat, updateChatList } = useChatStore((state) => ({
-    updateCurrentChat: state.updateCurrentChatName,
-    updateChatList: state.updateChatList,
-  }));
+  const { updateCurrentChat, updateChatList, contactList, updateContactList } =
+    useChatStore((state) => ({
+      updateCurrentChat: state.updateCurrentChatName,
+      updateChatList: state.updateChatList,
+      contactList: state.contactList,
+      updateContactList: state.updateContactList,
+    }));
   const updateReceiverUsername = useUserStore(
     (state) => state.updateReceiverUsername
   );
 
   // Initialize phase
   useEffect(() => {
+    const initContactList = defaultUsers.filter((item) => {
+      return item.username !== sessionStorage.getItem("username");
+    });
+    updateContactList(initContactList);
+
     const currentContact = sessionStorage.getItem("currentContact");
     const currentContactName = sessionStorage.getItem("currentContactName");
 
@@ -42,8 +61,8 @@ const useInitDoubleSidebar = () => {
       updateCurrentChat(currentContactName);
       sessionStorage.setItem("currentContactName", currentContactName);
     } else {
-      updateCurrentChat(contactsMockdata[0].name);
-      sessionStorage.setItem("currentContactName", contactsMockdata[0].name);
+      updateCurrentChat(initContactList[0].name);
+      sessionStorage.setItem("currentContactName", initContactList[0].name);
     }
 
     if (currentContact) {
@@ -51,9 +70,9 @@ const useInitDoubleSidebar = () => {
       updateReceiverUsername(currentContact);
       sessionStorage.setItem("currentContact", currentContact);
     } else {
-      setActiveLink(contactsMockdata[0].username);
-      updateReceiverUsername(contactsMockdata[0].username);
-      sessionStorage.setItem("currentContact", contactsMockdata[0].username);
+      setActiveLink(initContactList[0].username);
+      updateReceiverUsername(initContactList[0].username);
+      sessionStorage.setItem("currentContact", initContactList[0].username);
     }
   }, []);
 
@@ -89,7 +108,7 @@ const useInitDoubleSidebar = () => {
   }, [menuItemsMockdata, active]);
 
   const contacts = useMemo(() => {
-    return contactsMockdata.map((contacts) => (
+    return contactList.map((contacts) => (
       <a
         className={classes.link}
         data-active={activeLink === contacts.username || undefined}
@@ -107,8 +126,9 @@ const useInitDoubleSidebar = () => {
         {contacts.name}
       </a>
     ));
-  }, [contactsMockdata, activeLink]);
+  }, [contactList, activeLink]);
 
+  // Prevent hydration issues
   useEffect(() => {
     setLoaded(true);
   }, []);

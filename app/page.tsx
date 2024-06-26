@@ -10,7 +10,7 @@ import { socket } from "./socket";
 import { SERVER_URL } from "@/utilities/constants";
 import { useChatStore } from "@/stores/chatStore";
 
-const VALID_USERS: string[] = ["willie", "user_1"];
+const VALID_USERS: string[] = ["willie", "user_1", "user_2"];
 
 const Welcome = () => {
   const router = useRouter();

@@ -5,6 +5,19 @@ import Chat from "../Chat";
 import { useChatStore } from "@/stores/chatStore";
 import useUserStore from "@/hooks/useUserStore";
 
+const NoChatContainer = () => {
+  return (
+    <Center
+      sx={(theme) => ({
+        height: "100%",
+        fontSize: "1.5rem",
+        color: theme.colors.gray[6],
+      })}>
+      This conversation has no chat yet
+    </Center>
+  );
+};
+
 const ChatList = () => {
   const chatRef = useRef<null | HTMLDivElement>(null);
   const { chatList } = useChatStore((state) => ({
@@ -19,6 +32,8 @@ const ChatList = () => {
       chatRef.current.scrollIntoView({ behavior: "instant" });
   }, [chatList]);
 
+  console.log(chatList);
+
   return (
     <Stack
       gap={"md"}
@@ -28,15 +43,15 @@ const ChatList = () => {
         overflowX: "hidden",
         padding: "0.5rem",
       }}>
-      {chatList.length > 0 ? (
-        chatList.map((item) => {
+      {chatList && chatList.conversation.length > 0 ? (
+        chatList.conversation.map((item) => {
           return (
-            <div key={item.id}>
+            <div key={chatList.id}>
               <Chat
                 content={item.content}
                 status={item.status}
                 variant={
-                  username === item.owner
+                  username === chatList.owner
                     ? CHAT_VARIANT.RECEIVER
                     : CHAT_VARIANT.DELIEVER
                 }
@@ -45,14 +60,7 @@ const ChatList = () => {
           );
         })
       ) : (
-        <Center
-          sx={(theme) => ({
-            height: "100%",
-            fontSize: "1.5rem",
-            color: theme.colors.gray[6],
-          })}>
-          This conversation has no chat yet
-        </Center>
+        <NoChatContainer />
       )}
       <div ref={chatRef} />
     </Stack>

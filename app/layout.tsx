@@ -5,7 +5,6 @@ import Provider from "../utilities/provider";
 import { RootStyleRegistry } from "./EmotionRootStyleRegistry";
 import { MantineEmotionProvider } from "@mantine/emotion";
 import UserStoreProvider from "@/providers/userStoreProvider";
-import ChatStoreProvider from "@/providers/chatStoreProvider";
 
 export const metadata: Metadata = {
   title: "Create Next App",
@@ -30,9 +29,7 @@ export default function RootLayout({
         <RootStyleRegistry>
           <Provider>
             <MantineEmotionProvider>
-              <UserStoreProvider>
-                <ChatStoreProvider>{children}</ChatStoreProvider>
-              </UserStoreProvider>
+              <UserStoreProvider>{children}</UserStoreProvider>
             </MantineEmotionProvider>
           </Provider>
         </RootStyleRegistry>
