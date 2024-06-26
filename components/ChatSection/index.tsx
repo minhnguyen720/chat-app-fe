@@ -15,18 +15,19 @@ const ChatSection = () => {
     updateChatList: state.updateChatList,
   }));
 
-  const username = sessionStorage.getItem("username");
-  const reciever = sessionStorage.getItem("currentContact");
   // Initialize data
   useEffect(() => {
     const init = async () => {
+      const username = sessionStorage.getItem("username");
+      const reciever = sessionStorage.getItem("currentContact");
       const res = await axios.get(
         `${SERVER_URL}/chat/by-receiver?username=${username}&receiver=${reciever}`
       );
+      console.log("ChatSection", res.data);
       updateChatList(res.data);
     };
     init();
-  }, [username, reciever]);
+  }, []);
 
   return (
     <Box sx={{ padding: "0 1.5rem" }}>

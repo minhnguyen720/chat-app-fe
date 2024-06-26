@@ -32,8 +32,6 @@ const ChatList = () => {
       chatRef.current.scrollIntoView({ behavior: "instant" });
   }, [chatList]);
 
-  console.log(chatList);
-
   return (
     <Stack
       gap={"md"}
@@ -44,9 +42,9 @@ const ChatList = () => {
         padding: "0.5rem",
       }}>
       {chatList && chatList.conversation.length > 0 ? (
-        chatList.conversation.map((item) => {
+        chatList.conversation.map((item, index) => {
           return (
-            <div key={chatList.id}>
+            <div key={`${chatList.id}-item-${index}`}>
               <Chat
                 content={item.content}
                 status={item.status}

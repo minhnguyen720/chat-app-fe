@@ -15,9 +15,9 @@ const ApplicationWrapper = ({
   const updateAuthorizedUsername = useUserStore(
     (state) => state.updateAuthorizedUsername
   );
-  const currentUsername = sessionStorage.getItem("username");
 
   useEffect(() => {
+    const currentUsername = sessionStorage.getItem("username");
     if (
       currentUsername !== null &&
       currentUsername !== undefined &&
@@ -27,7 +27,7 @@ const ApplicationWrapper = ({
     } else {
       router.push("/");
     }
-  }, [currentUsername]);
+  }, []);
 
   return (
     <Flex>

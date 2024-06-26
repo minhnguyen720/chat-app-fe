@@ -22,7 +22,9 @@ const useSocketIo = () => {
   // Since Zustand state not able to use in onConnect so we need a state to trigger this useEffect to update global chat list
   useEffect(() => {
     if (newChat) {
-      updateChatList([...chatList, newChat]);
+      updateChatList(newChat);
+
+      // Push latest contact to the top of contact tree
       const latestContactIndex = contactList.findIndex(
         (obj) => obj.username === newChat.owner
       );
